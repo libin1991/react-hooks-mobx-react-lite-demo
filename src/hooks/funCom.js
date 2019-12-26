@@ -1,0 +1,33 @@
+import React, { useState, useEffect, useContext } from 'react'
+import { Observer, observer } from 'mobx-react-lite';
+import { MyContext } from './HookStore';
+const CounterFunction = (props) => {
+    const [num, setNum] = useState(10);
+    // 当组件上层最近的 <MyContext.Provider> 更新时，该 Hook 会触发重渲染，
+    //并使用最新传递给 MyContext provider 的 context value 值。
+    const store = useContext(MyContext);
+
+    useEffect(() => {
+        console.log('num change', MyContext);
+    }, [num]);
+
+    console.log('**store:');
+    console.log(store.count);
+
+    return (
+        <div>
+            <p>*********************</p>
+            <p>num: {num}</p>
+            <button onClick={() => setNum(num + 1)}>set num</button>
+
+            {/* 深度监听 store 变化并进行重渲染，导致下面两行结果相同 */}
+            <p>Count: {store.getCount}</p>
+
+            <Observer>{() => <p>Count2: {store.getCount}</p>}</Observer>
+            <button onClick={() => store.handleCount()}>Counter Add</button>
+            <p>*********************</p>
+        </div>
+    );
+}
+
+export default observer(CounterFunction);
